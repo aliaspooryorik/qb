@@ -68,10 +68,6 @@ component displayname="Grammar" accessors="true" singleton {
             "processState": function() {
             }
         };
-        variables.log = {
-            "debug": function() {
-            }
-        };
         return this;
     }
 
@@ -100,7 +96,7 @@ component displayname="Grammar" accessors="true" singleton {
         };
         tryPreInterceptor( data );
         structAppend( data.options, { result: "local.result" }, true );
-        variables.log.debug( "Executing sql: #data.sql#", "With bindings: #serializeJSON( data.bindings )#" );
+        debug( data );
         var startTick = getTickCount();
         var q = queryExecute( data.sql, data.bindings, data.options );
         data.executionTime = getTickCount() - startTick;
@@ -111,6 +107,13 @@ component displayname="Grammar" accessors="true" singleton {
             result: local.result,
             query: ( isNull( q ) ? javacast( "null", "" ) : q )
         };
+    }
+    
+    private void function debug( data ) {
+        // Check if WireBox has injected
+        if (structKeyExists(variables, "log")) {
+            variables.log.debug( "Executing sql: #data.sql#", "With bindings: #serializeJSON( data.bindings )#" );
+        }
     }
 
     /**
